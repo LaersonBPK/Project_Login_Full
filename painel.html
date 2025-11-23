@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome {
+            color: #555;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .feature-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .feature-btn:hover {
+            background: #5a6fd8;
+        }
+
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        
+        .time-counter {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">MeuSistema</div>
+        <div class="user-info">
+            <span class="welcome" id="welcomeMessage">Bem-vindo, Usuário!</span>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="dashboard-card">
+            <div class="success-icon">✓</div>
+            <h1>Login Realizado com Sucesso!</h1>
+            <p class="message" id="loginMessage">
+                Você acessou o sistema com sucesso. Agora você tem acesso às funcionalidades disponíveis.
+            </p>
+            
+            <div class="features">
+                <div class="feature-card" onclick="abrirModal('perfil')">
+                    <h3>👤 Meu Perfil</h3>
+                    <p>Visualize e edite suas informações pessoais</p>
+                    <button class="feature-btn">Acessar</button>
+                </div>
+                
+                <div class="feature-card" onclick="abrirModal('senha')">
+                    <h3>🔒 Alterar Senha</h3>
+                    <p>Atualize sua senha de acesso ao sistema</p>
+                    <button class="feature-btn">Alterar</button>
+                </div>
+                
+                <div class="feature-card" onclick="abrirModal('config')">
+                    <h3>⚙️ Configurações</h3>
+                    <p>Ajuste as configurações do sistema</p>
+                    <button class="feature-btn">Configurar</button>
+                </div>
+                
+                <div class="feature-card" onclick="abrirModal('relatorios')">
+                    <h3>📊 Relatórios</h3>
+                    <p>Acesse relatórios e estatísticas</p>
+                    <button class="feature-btn">Visualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modalSenha" class="modal">
+        <div class="modal-content">
+            <h3>🔒 Alterar Senha</h3>
+            <div class="input-group">
+                <label for="senhaAtual">Senha Atual:</label>
+                <input type="password" id="senhaAtual" placeholder="Digite sua senha atual">
+            </div>
+            <div class="input-group">
+                <label for="novaSenha">Nova Senha:</label>
+                <input type="password" id="novaSenha" placeholder="Digite a nova senha">
+            </div>
+            <div class="input-group">
+                <label for="confirmarSenha">Confirmar Nova Senha:</label>
+                <input type="password" id="confirmarSenha" placeholder="Confirme a nova senha">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="fecharModal('senha')">Cancelar</button>
+                <button class="modal-btn primary" onclick="alterarSenha()">Alterar Senha</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modalPerfil" class="modal">
+        <div class="modal-content">
+            <h3>👤 Meu Perfil</h3>
+            <div class="input-group">
+                <label for="nomeUsuario">Nome:</label>
+                <input type="text" id="nomeUsuario" placeholder="Seu nome completo">
+            </div>
+            <div class="input-group">
+                <label for="emailUsuario">Email:</label>
+                <input type="email" id="emailUsuario" placeholder="seu@email.com">
+            </div>
+            <div class="input-group">
+                <label for="telefoneUsuario">Telefone:</label>
+                <input type="tel" id="telefoneUsuario" placeholder="(11) 99999-9999">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="fecharModal('perfil')">Fechar</button>
+                <button class="modal-btn primary" onclick="salvarPerfil()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="modalGenerico" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitulo">Título</h3>
+            <p id="modalMensagem">Mensagem do modal.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="fecharModal('generico')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="time-counter" id="timeCounter"></div>
+
+    <script>
+        
+        function verificarLogin() {
+            const usuarioLogado = localStorage.getItem('usuarioLogado');
+            const loginTime = localStorage.getItem('loginTime');
+            
+            if (!usuarioLogado) {
+                redirectToLogin('Você precisa fazer login primeiro!');
+                return;
+            }
+            
+            
+            if (loginTime) {
+                const tempoSessao = Date.now() - parseInt(loginTime);
+                const horasMaximas = 8 * 60 * 60 * 1000;
+                
+                if (tempoSessao > horasMaximas) {
+                    redirectToLogin('Sessão expirada. Faça login novamente.');
+                    return;
+                }
+            }
+            
+           
+            document.getElementById('welcomeMessage').textContent = `Bem-vindo, ${usuarioLogado}!`;
+            document.getElementById('loginMessage').textContent = 
+                `Olá ${usuarioLogado}! Você acessou o sistema com sucesso. Seu acesso é válido por 8 horas.`;
+                
+            
+            carregarPerfil();
+            
+            iniciarContadorTempo();
+        }
+
+        function redirectToLogin(mensagem) {
+            alert(mensagem);
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('loginTime');
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            if (confirm('Tem certeza que deseja sair do sistema?')) {
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('loginTime');
+                localStorage.removeItem('dadosPerfil');
+                window.location.href = 'login.html';
+            }
+        }
+
+        
+        function iniciarContadorTempo() {
+            const loginTime = parseInt(localStorage.getItem('loginTime'));
+            const tempoOnlineElement = document.getElementById('timeCounter');
+
+            function atualizarTempo() {
+                const tempoDecorrido = Date.now() - loginTime;
+                const horas = Math.floor(tempoDecorrido / (1000 * 60 * 60));
+                const minutos = Math.floor((tempoDecorrido % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((tempoDecorrido % (1000 * 60)) / 1000);
+                
+                tempoOnlineElement.textContent = `⏰ Online: ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+            }
+
+            setInterval(atualizarTempo, 1000);
+            atualizarTempo();
+        }
+
+        
+        function abrirModal(tipo) {
+            if (tipo === 'senha') {
+                document.getElementById('modalSenha').style.display = 'flex';
+            } else if (tipo === 'perfil') {
+                document.getElementById('modalPerfil').style.display = 'flex';
+            } else {
+                document.getElementById('modalTitulo').textContent = 
+                    tipo === 'config' ? '⚙️ Configurações' : '📊 Relatórios';
+                document.getElementById('modalMensagem').textContent = 
+                    tipo === 'config' ? 'Funcionalidade em desenvolvimento...' : 'Relatórios disponíveis em breve...';
+                document.getElementById('modalGenerico').style.display = 'flex';
+            }
+        }
+
+        function fecharModal(tipo) {
+            if (tipo === 'senha') {
+                document.getElementById('modalSenha').style.display = 'none';
+                
+                document.getElementById('senhaAtual').value = '';
+                document.getElementById('novaSenha').value = '';
+                document.getElementById('confirmarSenha').value = '';
+            } else if (tipo === 'perfil') {
+                document.getElementById('modalPerfil').style.display = 'none';
+            } else {
+                document.getElementById('modalGenerico').style.display = 'none';
+            }
+        }
+
+       
+        function alterarSenha() {
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            const usuario = localStorage.getItem('usuarioLogado');
+
+            if (!senhaAtual || !novaSenha || !confirmarSenha) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (novaSenha !== confirmarSenha) {
+                alert('As novas senhas não coincidem!');
+                return;
+            }
+
+            if (novaSenha.length < 6) {
+                alert('A nova senha deve ter pelo menos 6 caracteres!');
+                return;
+            }
+
+            
+            alert('Senha alterada com sucesso!');
+            fecharModal('senha');
+        }
+
+        
+        function carregarPerfil() {
+            const dadosSalvos = localStorage.getItem('dadosPerfil');
+            if (dadosSalvos) {
+                const dados = JSON.parse(dadosSalvos);
+                document.getElementById('nomeUsuario').value = dados.nome || '';
+                document.getElementById('emailUsuario').value = dados.email || '';
+                document.getElementById('telefoneUsuario').value = dados.telefone || '';
+            }
+        }
+
+        function salvarPerfil() {
+            const dadosPerfil = {
+                nome: document.getElementById('nomeUsuario').value,
+                email: document.getElementById('emailUsuario').value,
+                telefone: document.getElementById('telefoneUsuario').value
+            };
+
+            localStorage.setItem('dadosPerfil', JSON.stringify(dadosPerfil));
+            alert('Perfil salvo com sucesso!');
+            fecharModal('perfil');
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', verificarLogin);
+
+       
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
